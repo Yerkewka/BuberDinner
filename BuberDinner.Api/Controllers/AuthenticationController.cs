@@ -1,53 +1,48 @@
-using BuberDinner.Application.Services.Authentication;
+using BuberDinner.Application.Authentication.Commands.Register;
+using BuberDinner.Application.Authentication.Queries.Login;
+using BuberDinner.Application.Features.Authentication.Common;
 using BuberDinner.Contracts.Authentication;
+using MapsterMapper;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BuberDinner.Api.Controllers;
 
-[ApiController]
 [Route("auth")]
-public class AuthenticationController : ControllerBase
+public class AuthenticationController : ApiController
 {
-	private readonly IAuthenticationService _authenticationService;
+	private readonly ISender _sender;
+	private readonly IMapper _mapper;
 
-	public AuthenticationController(IAuthenticationService authenticationService)
+	public AuthenticationController(ISender sender, IMapper mapper)
 	{
-		_authenticationService = authenticationService;
+		_sender = sender;
+		_mapper = mapper;
 	}
 
 	[HttpPost("register")]
-	public IActionResult Register(RegisterRequest request)
+	public async Task<IActionResult> Register(RegisterRequest request, CancellationToken ct = default)
 	{
-		var authResult = _authenticationService.Register(
-			request.FirstName,
-			request.LastName,
-			request.Email,
-			request.Password);
+		var command = _mapper.Map<RegisterCommand>(request);
 
-		var response = new AuthenticationResponse(
-			authResult.User.Id,
-			authResult.User.FirstName,
-			authResult.User.LastName,
-			authResult.User.Email,
-			authResult.Token);
+		var authResult = await _sender.Send(command, ct);
 
-		return Ok(response);
+		return authResult.Match(
+			result => Ok(_mapper.Map<AuthenticationResponse>(result)),
+			Problem
+		);
 	}
 
 	[HttpPost("login")]
-	public IActionResult Login(LoginRequest request)
+	public async Task<IActionResult> Login(LoginRequest request, CancellationToken ct = default)
 	{
-		var authResult = _authenticationService.Login(
-			request.Email,
-			request.Password);
+		var query = _mapper.Map<LoginQuery>(request);
 
-		var response = new AuthenticationResponse(
-			authResult.User.Id,
-			authResult.User.FirstName,
-			authResult.User.LastName,
-			authResult.User.Email,
-			authResult.Token);
+		var authResult = await _sender.Send(query, ct);
 
-		return Ok(response);
+		return authResult.Match(
+			result => Ok(_mapper.Map<AuthenticationResponse>(result)),
+			Problem
+		);
 	}
 }
