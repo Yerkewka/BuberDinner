@@ -26,34 +26,36 @@ public sealed class Menu : AggregateRoot<MenuId>
 
     private Menu(
         MenuId id,
+        HostId hostId,
         string name,
         string description,
         AvarageRating avarageRating,
-        HostId hostId,
-        DateTime createdDateTime,
-        DateTime updatedDateTime) : base(id)
+        List<MenuSection> sections) : base(id)
     {
         Name = name;
         Description = description;
         AvarageRating = avarageRating;
         HostId = hostId;
-        CreatedDateTime = createdDateTime;
-        UpdatedDateTime = updatedDateTime;
+        CreatedDateTime = DateTime.UtcNow;
+        UpdatedDateTime = DateTime.UtcNow;
+
+        _sections = sections;
     }
 
     public static Menu Create(
+        HostId hostId,
         string name,
         string description,
-        HostId hostId)
+        List<MenuSection>? sections
+        )
     {
         return new(
             MenuId.CreateUnique(),
+            hostId,
             name,
             description,
             AvarageRating.CreateNew(),
-            hostId,
-            DateTime.UtcNow,
-            DateTime.UtcNow);
+            sections ?? new());
     }
 }
 
