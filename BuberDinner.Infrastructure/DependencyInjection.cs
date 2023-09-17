@@ -2,10 +2,12 @@ using System.Text;
 using BuberDinner.Application.Common.Interfaces.Authentication;
 using BuberDinner.Application.Common.Interfaces.Persistence;
 using BuberDinner.Application.Common.Interfaces.Services;
+using BuberDinner.Infrastructure.Persistence.Repositories;
 using BuberDinner.Infrastucture.Authentication;
 using BuberDinner.Infrastucture.Persistence;
 using BuberDinner.Infrastucture.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -19,7 +21,7 @@ public static class DependencyInjection
     {
         services
             .AddAuth(configuration)
-            .AddPersistance();
+            .AddPersistance(configuration);
 
         services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
         
@@ -27,8 +29,11 @@ public static class DependencyInjection
         return services;
     }
 
-    private static IServiceCollection AddPersistance(this IServiceCollection services)
+    private static IServiceCollection AddPersistance(this IServiceCollection services, IConfiguration configuration)
     {
+        services.AddDbContext<BuberDinnerDbContext>(options => 
+            options.UseSqlServer(configuration.GetConnectionString("Default")));
+
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IMenuRepository, MenuRepository>();
 
