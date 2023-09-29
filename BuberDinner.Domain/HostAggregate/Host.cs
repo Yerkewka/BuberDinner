@@ -7,7 +7,7 @@ using BuberDinner.Domain.UserAggregate.ValueObjects;
 
 namespace BuberDinner.Domain.HostAggregate;
 
-public sealed class Host : AggregateRoot<HostId>
+public sealed class Host : AggregateRoot<HostId, Guid>
 {
     private readonly List<MenuId> _menuIds = new();
     private readonly List<DinnerId> _dinnerIds = new();
@@ -40,6 +40,12 @@ public sealed class Host : AggregateRoot<HostId>
         CreatedDateTime = createdDateTime;
         UpdatedDateTime = updatedDateTime;
     }
+
+#pragma warning disable CS8618
+    private Host()
+    {
+    }
+#pragma warning restore CS8618
 
     public static Host Create(string firstName, string lastName, string profileImage, UserId userId)
     {

@@ -2,6 +2,7 @@ using System.Text;
 using BuberDinner.Application.Common.Interfaces.Authentication;
 using BuberDinner.Application.Common.Interfaces.Persistence;
 using BuberDinner.Application.Common.Interfaces.Services;
+using BuberDinner.Infrastructure.Persistence.Interceptors;
 using BuberDinner.Infrastructure.Persistence.Repositories;
 using BuberDinner.Infrastucture.Authentication;
 using BuberDinner.Infrastucture.Persistence;
@@ -34,6 +35,7 @@ public static class DependencyInjection
         services.AddDbContext<BuberDinnerDbContext>(options => 
             options.UseSqlServer(configuration.GetConnectionString("Default")));
 
+        services.AddScoped<PublishDomainEventsInterceptor>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IMenuRepository, MenuRepository>();
 

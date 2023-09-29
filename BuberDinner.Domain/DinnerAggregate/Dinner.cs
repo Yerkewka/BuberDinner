@@ -1,14 +1,14 @@
-using BuberDinner.Domain.Common.Models;
 using BuberDinner.Domain.Common.ValueObjects;
 using BuberDinner.Domain.DinnerAggregate.Entities;
 using BuberDinner.Domain.DinnerAggregate.Enums;
 using BuberDinner.Domain.DinnerAggregate.ValueObjects;
 using BuberDinner.Domain.MenuAggregate.ValueObjects;
 using BuberDinner.Domain.HostAggregate.ValueObjects;
+using BuberDinner.Domain.Common.Models;
 
 namespace BuberDinner.Domain.DinnerAggregate;
 
-public sealed class Dinner : AggregateRoot<DinnerId>
+public sealed class Dinner : AggregateRoot<DinnerId, Guid>
 {
     private readonly List<Reservation> _reservations = new();
 
@@ -63,6 +63,10 @@ public sealed class Dinner : AggregateRoot<DinnerId>
         Location = location;
         CreatedDateTime = createdDateTime;
         UpdatedDateTime = updatedDateTime;
+    }
+
+    private Dinner()
+    {        
     }
 
     public static Dinner Create(

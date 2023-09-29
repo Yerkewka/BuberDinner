@@ -7,7 +7,7 @@ using BuberDinner.Domain.HostAggregate.ValueObjects;
 
 namespace BuberDinner.Domain.BillAggregate;
 
-public sealed class Bill : AggregateRoot<BillId>
+public sealed class Bill : AggregateRoot<BillId, Guid>
 {
     public DinnerId DinnerId { get; }
     public GuestId GuestId { get; }
@@ -47,5 +47,9 @@ public sealed class Bill : AggregateRoot<BillId>
             price,
             DateTime.UtcNow,
             DateTime.UtcNow);
+    }
+
+    private Bill()
+    {        
     }
 }
